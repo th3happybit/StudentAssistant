@@ -9,11 +9,10 @@ def create_connection(db_file):
 		conn = sqlite3.connect(db_file)
 		print(sqlite3.version)
 		print("Opened database successfully")
-		db = db_file
-		return conn	
+		conn.commit()
+		return conn
 	except Error as e:
 		print(e)
-	return None
 
 def create_table(conn, create_table_sql):
 	""" create a table from the create_table_sql statement
@@ -30,16 +29,18 @@ def create_table(conn, create_table_sql):
 def create_student_table(database):
 	sql_student_table = """ CREATE TABLE IF NOT EXISTS student (
 										id integer PRIMARY KEY,
-										fname text NOT NULL,
-										lname text NOT NULL,
+										fname text,
+										lname text,
 										age integer,
-										univ text NOT NULL,
-										degree text NOT NULL
+										univ text,
+										degree text
 									); """
 	
 	conn = create_connection(database)
 	create_table(conn,sql_student_table)
 	print("Table created successfully")
+	conn.commit()
+	conn.close()
 
 
 def insert(conn,student):
@@ -54,14 +55,14 @@ def insert(conn,student):
 	cur.execute(sql, student)
 	return cur.lastrowid
 
-def insertStudent(database,fname,lname,age,univ,degree):
+def insertStudent(database,fname1,lname1,age1,univ1,degree1):
 	conn = create_connection(database)
-	try:
-		student = (fname,lname,age,univ,degree)
-		id = insert(conn,student)
-		print("Insering Done ! id = "+id)
-	except Error as e:
-		print(e)
+	sql = ''' INSERT INTO student(fname,lname,age,univ,degree) VALUES(:fname,:lname,:age,:univ,:degree) '''
+	cur = conn.cursor()
+	cur.execute(sql,{'fname':fname1,'lname':lname1,'age':age1,'univ':univ1,'degree':degree1})
+	conn.commit()
+	conn.close()
+	
 
 def delete_all(database):
     """
@@ -73,7 +74,8 @@ def delete_all(database):
     sql = 'DELETE FROM student'
     cur = conn.cursor()
     cur.execute(sql)
-
+    conn.commit()
+    conn.close()
 def update_task(conn, student):
     """
     update fname, lname,age,univ, and degree of a student
@@ -90,3 +92,18 @@ def update_task(conn, student):
               WHERE id = ?'''
     cur = conn.cursor()
     cur.execute(sql, student)
+    conn.commit()
+    conn.close()	
+def select_student(database):
+	"""
+    Query student 
+    :param database: database name
+    :return: student
+    """
+	conn = create_connection(database)
+	cur =  conn.cursor()
+	cur.execute("SELECT * FROM student")
+	student = cur.fetchone()
+	conn.commit()
+	return student
+
