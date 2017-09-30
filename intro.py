@@ -1,4 +1,5 @@
-from speak import speak,listen
+import speak
+import listen
 import sqlite as sq
 
 def firstWelcome():
@@ -43,5 +44,5 @@ def normalIntro():
 		db = dbt[1]
 	student = sq.select_student(db)
 	speak("welcome back "+ student[1])
-	
+
 	

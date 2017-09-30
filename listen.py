@@ -9,10 +9,10 @@ def listen():
 	try:
 		# return recognizer.recognize_sphinx(audio)
 		return recognizer.recognize_google(audio)
-	except sr.UnknownValueError:
-		print("Could not understand audio")
+	except sr.UnknownValueError as e:
+		print("Could not understand audio".format(e))
 	except sr.RequestError as e:
 		print("Recog Error; {0}".format(e))
-
 	return ""
+print(listen())
 	

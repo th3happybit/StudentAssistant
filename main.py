@@ -5,11 +5,10 @@
 
 #Project : Student Assistant 
 
-import speak
-import listen
+from speak import speak
+from listen import listen
 from intro import firstWelcome,normalIntro
 
 #firstWelcome()
 #normalIntro()
-s = listen()
-print(s)
+speak("8h to 9h")
