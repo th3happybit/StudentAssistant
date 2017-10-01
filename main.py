@@ -11,4 +11,4 @@ from intro import firstWelcome,normalIntro
 
 #firstWelcome()
 #normalIntro()
-speak("8h to 9h")
+speak("Analyse")
