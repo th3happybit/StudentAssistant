@@ -1,4 +1,6 @@
+Student Assistant
+
 #Oussama Messabih
 #email : giantscrusher@gmail.com
 
-#Project : Student Assistant 
+Virtual Assistant specially for students
