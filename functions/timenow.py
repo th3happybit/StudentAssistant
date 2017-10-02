@@ -15,16 +15,3 @@ def timenow():
 	elif int(t[1]) > 30:
 		return t[1] + " to " + t[0]  
 	return ""
-
-def schoolSchedule(cmd):
-	if cmd == "":
-		pass
-	return
-def search(subject):
-	return
-def openlink(link):
-	return
-def calcule(expr):
-	return
-def facebook():
-	return
