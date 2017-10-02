@@ -1,6 +1,6 @@
 import openpyxl as xl
 import os
-shldspath = {'schdls/cpi2.xlsx'}
+shldspath = {'../data/schdls/cpi2.xlsx'}
 
 def getsch():
 	return shldspath
