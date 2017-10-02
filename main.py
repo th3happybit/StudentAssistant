@@ -8,7 +8,5 @@
 from speak import speak
 from listen import listen
 from intro import firstWelcome,normalIntro
-
-#firstWelcome()
-#normalIntro()
-speak("Analyse")
+firstWelcome()
+normalIntro()

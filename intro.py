@@ -1,9 +1,11 @@
-import speak
-import listen
+from speak import speak
+from listen import listen
 import sqlite as sq
+import configparser
+config = configparser.ConfigParser()
 
 def firstWelcome():
-	speak("hello sir , i am student assistant , i hope i will be helpful to you , i want to do some configuration , can you help me please ? ")
+	speak("Hello sir , i am student assistant , i hope i will be helpful to you , i want to do some configuration , can you help me please ? ")
 	speak("we will use the terminel to avoid mistakes !")
 	speak("First ! can you entry your name , please ? ")
 	print("your first name : ")
@@ -26,22 +28,25 @@ def firstWelcome():
 	speak("what's year you are study in ? ")
 	print("entry your degree ,please ?")
 	degree = input()
+	speak("what do you want to name me ?")
+	vsname = input()
+	speak("Thank you "+fname+" I hope i will be hopeful to you ")
 	sq.create_connection(fname+lname+".sqlite")
 	sq.create_student_table(fname+lname+".sqlite")
 	sq.insertStudent(fname+lname+".sqlite",fname,lname,age,univName,degree)
-	file = open("main.conf","w")
-	file.write("dbname "+fname+lname+".sqlite")
-	file.close()
+	cfg = open("main.cfg","w")
+	config.add_section('database')
+	config.set('database','dbname',fname+lname+".sqlite")
+	config.add_section('assistantInfo')
+	config.set('assistantInfo','name',vsname)
+	config.write(cfg)
+	cfg.close()
 
 def normalIntro():
-	file = open("main.conf","r")
-	dbs = file.readline()
-	print(dbs)
-	dbt = dbs.split(' ')
-	print(dbt)
-	dbname = ""
-	if dbt[0] == "dbname":
-		db = dbt[1]
+	config.read("main.cfg")
+	db = ""
+	if 'database' in config:
+		db = config['database']['dbname']
 	student = sq.select_student(db)
 	speak("welcome back "+ student[1])
 
