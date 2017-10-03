@@ -19,36 +19,25 @@ def getsheet(path,degree,group):
 		if group in sheets:
 			return wp.get_sheet_by_name(group)
 
-def getTds(day,sheet):
-	days = list()
-	modules = list()
-	TDs = list()
-	for i in range(2,sheet.max_column+1):
-		days.append(sheet.cell(row=1,column=i).value)
-	for i in days:
-		if i == day:
-			for j in range(2,sheet.max_row+1):
-					modules.append([sheet.cell(row=j,column=1).value,sheet.cell(row=j,column=days.index('Sunday')+2).value])
-	for i in modules:
-		s = i[1].split(' ')
-		if s[0]=="TD":
-			TDs.append(i)
-	return TDs
+def getTC(day,sheet,tc):
+	if tc in ['TD','Cours']:
+		days = list()
+		modules = list()
+		module = list()
+		for i in range(2,sheet.max_column+1):
+			days.append(sheet.cell(row=1,column=i).value)
+		for i in days:
+			if i == day:
+				for j in range(2,sheet.max_row+1):
+						modules.append([sheet.cell(row=j,column=1).value,sheet.cell(row=j,column=days.index(day)+2).value])
+						print(modules)
+		for i in modules:
+			s = i[1].split(' ')
+			#type TD or Cours
+			if s[0]==tc:
+				module.append(i)
+		return module
 
-def getCourses(day,sheet):
-	days = getdays(sheet)
-	modules = list()
-	cours = list()
-
-	for i in days:
-		if i == day:
-			for j in range(2,sheet.max_rows+1):
-					modules.append([ws.cell(row=j,column=1).value,ws.cell(row=j,column=days.index('Sunday')+2).value])
-	for i in modules:
-		s = i[1].split(' ')
-		if s[0]=="Cours":
-			cours.append(i)
-	return cours
 
 def getAll(day,sheet):
 	days = list()
@@ -83,7 +72,8 @@ def getModulebyTime(day,hour,sheet):
 		if hour in i[0]:
 			return i[1]
 
-def telltds(day):
+
+def tellmodules(day,tc):
 	#student list the value of group in index 7 and the degree in the 6 index
 	group = ''
 	degree = ''
@@ -91,20 +81,21 @@ def telltds(day):
 		group = config['user']['group']
 		degree = config['user']['degree']
 	temp = list()
-	tds = getTds(day,getsheet(schldspath,degree,group))
-	if len(tds) % 2 !=0:
-		tds.append(['0','empty'])
-	for i in tds:
-		time = i[0]
-		td = i[1]
-		if temp == []:
-			temp.append(time)
-			temp.append(td)
-		elif temp[1] == td:
-				t1 = temp[0].split(' ')
-				time = time.split(' ')
-				speak("you have "+ td +" from "+ t1[0] +" to " + time[len(time)-1])
-				temp.clear()
-		elif time[0]=='0':
-			time = temp[0].split(' ')
-			speak("you have "+ temp[1] + " from "+time[0] + " to "+time[len(time)-1])
+	if tc in ['TD','Cours']:
+		tds = getTC(day,getsheet(schldspath,degree,group),tc)
+		if len(tds) % 2 !=0:
+			tds.append(['0','empty'])
+		for i in tds:
+			time = i[0]
+			td = i[1]
+			if temp == []:
+				temp.append(time)
+				temp.append(td)
+			elif temp[1] == td:
+					t1 = temp[0].split(' ')
+					time = time.split(' ')
+					speak("you have "+ td +" from "+ t1[0] +" to " + time[len(time)-1])
+					temp.clear()
+			elif time[0]=='0':
+				time = temp[0].split(' ')
+				speak("you have "+ temp[1] + " from "+time[0] + " to "+time[len(time)-1])
