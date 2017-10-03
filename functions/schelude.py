@@ -1,7 +1,7 @@
 import openpyxl as xl
 import os
 import configparser
-
+from speak import speak 
 config = configparser.ConfigParser()
 schldspath = 'data/schdls/'
 #load confugiration file
@@ -10,6 +10,7 @@ config.read("data/main.cfg")
 
 def getsch():
 	return shldspath
+
 def getsheet(path,degree,group):
 	dirt = os.listdir("data/schdls")
 	if degree+".xlsx" in dirt:
@@ -60,6 +61,7 @@ def getAll(day,sheet):
 			for j in range(2,sheet.max_rows+1):
 					modules.append([ws.cell(row=j,column=1).value,ws.cell(row=j,column=days.index('Sunday')+2).value])
 	return modules
+
 def getTimeofmodule(module,sheet):
 	days = getdays(sheet)
 	for i in days:
@@ -73,6 +75,7 @@ def getdays(sheet):
 	for i in range(2,sheet.max_column+1):
 		days.append(sheet.cell(row=1,column=i).value)
 	return days
+
 def getModulebyTime(day,hour,sheet):
 	days =  getdays(sheet)
 	modules = getAll(day,sheet)
@@ -87,6 +90,21 @@ def telltds(day):
 	if 'user' in config:
 		group = config['user']['group']
 		degree = config['user']['degree']
+	temp = list()
 	tds = getTds(day,getsheet(schldspath,degree,group))
-	print(tds)
-
+	if len(tds) % 2 !=0:
+		tds.append(['0','empty'])
+	for i in tds:
+		time = i[0]
+		td = i[1]
+		if temp == []:
+			temp.append(time)
+			temp.append(td)
+		elif temp[1] == td:
+				t1 = temp[0].split(' ')
+				time = time.split(' ')
+				speak("you have "+ td +" from "+ t1[0] +" to " + time[len(time)-1])
+				temp.clear()
+		elif time[0]=='0':
+			time = temp[0].split(' ')
+			speak("you have "+ temp[1] + " from "+time[0] + " to "+time[len(time)-1])
