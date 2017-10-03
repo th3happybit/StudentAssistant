@@ -6,7 +6,7 @@ db = ''
 def create_connection(db_file):
 	""" create a database connection to a SQLite database """
 	try:
-		conn = sqlite3.connect(db_file)
+		conn = sqlite3.connect("data/"+db_file)
 		print(sqlite3.version)
 		print("Opened database successfully")
 		conn.commit()
@@ -37,8 +37,9 @@ def create_student_table(database):
 									); """
 	
 	conn = create_connection(database)
-	create_table(conn,sql_student_table)
-	print("Table created successfully")
+	if conn is not None:
+		create_table(conn,sql_student_table)
+		print("Table created successfully")
 	conn.commit()
 	conn.close()
 
@@ -50,16 +51,19 @@ def insert(conn,student):
 	:param student:
 	:return: student id
 	"""
-	sql = ''' INSERT INTO student (fname,lname,age,univ,degree) VALUES(?,?,?,?,?) '''
-	cur = conn.cursor()
-	cur.execute(sql, student)
-	return cur.lastrowid
+	with conn:
+		sql = ''' INSERT INTO student (fname,lname,age,univ,degree) VALUES(?,?,?,?,?) '''
+		cur = conn.cursor()
+		cur.execute(sql, student)
+		return cur.lastrowid
 
-def insertStudent(database,fname1,lname1,age1,univ1,degree1):
+def insertStudent(database,fname,lname,age,univ,degree):
 	conn = create_connection(database)
-	sql = ''' INSERT INTO student(fname,lname,age,univ,degree) VALUES(:fname,:lname,:age,:univ,:degree) '''
-	cur = conn.cursor()
-	cur.execute(sql,{'fname':fname1,'lname':lname1,'age':age1,'univ':univ1,'degree':degree1})
+	with conn:
+		sql = ''' INSERT INTO student(fname,lname,age,univ,degree) VALUES(?,?,?,?,?) '''
+		cur = conn.cursor()
+		student = (fname,lname,age,univ,degree)
+		cur.execute(sql,student)
 	conn.commit()
 	conn.close()
 	
@@ -71,11 +75,12 @@ def delete_all(database):
     :return:
     """
     conn = create_connection(database)
-    sql = 'DELETE FROM student'
-    cur = conn.cursor()
-    cur.execute(sql)
-    conn.commit()
-    conn.close()
+    with conn:
+	    sql = 'DELETE FROM student'
+	    cur = conn.cursor()
+	    cur.execute(sql)
+	    conn.commit()
+	    conn.close()
 def update_task(conn, student):
     """
     update fname, lname,age,univ, and degree of a student
@@ -101,9 +106,10 @@ def select_student(database):
     :return: student
     """
 	conn = create_connection(database)
-	cur =  conn.cursor()
-	cur.execute("SELECT * FROM student")
-	student = cur.fetchone()
-	conn.commit()
-	return student
+	with conn:
+		cur =  conn.cursor()
+		cur.execute("SELECT * FROM student")
+		student = cur.fetchone()
+		conn.commit()
+		return student
 

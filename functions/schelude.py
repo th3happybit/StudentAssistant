@@ -1,16 +1,22 @@
 import openpyxl as xl
 import os
-shldspath = {'../data/schdls/cpi2.xlsx'}
+import configparser
+
+config = configparser.ConfigParser()
+schldspath = 'data/schdls/'
+#load confugiration file
+config.read("data/main.cfg")
+
 
 def getsch():
 	return shldspath
-def getsheet(path,season,group):
-	dir = os.listdir("schdls")
-	if season in dir:
-		wp = xl.load_workbook(path)
+def getsheet(path,degree,group):
+	dirt = os.listdir("data/schdls")
+	if degree+".xlsx" in dirt:
+		wp = xl.load_workbook(path + degree + '.xlsx')
 		sheets = wp.get_sheet_names()
 		if group in sheets:
-			return xl.get_sheet_by_name(group)
+			return wp.get_sheet_by_name(group)
 
 def getTds(day,sheet):
 	days = list()
@@ -20,11 +26,11 @@ def getTds(day,sheet):
 		days.append(sheet.cell(row=1,column=i).value)
 	for i in days:
 		if i == day:
-			for j in range(2,sheet.max_rows+1):
-					modules.append([ws.cell(row=j,column=1).value,ws.cell(row=j,column=days.index('Sunday')+2).value])
+			for j in range(2,sheet.max_row+1):
+					modules.append([sheet.cell(row=j,column=1).value,sheet.cell(row=j,column=days.index('Sunday')+2).value])
 	for i in modules:
 		s = i[1].split(' ')
-		if s[0]="TD":
+		if s[0]=="TD":
 			TDs.append(i)
 	return TDs
 
@@ -39,7 +45,7 @@ def getCourses(day,sheet):
 					modules.append([ws.cell(row=j,column=1).value,ws.cell(row=j,column=days.index('Sunday')+2).value])
 	for i in modules:
 		s = i[1].split(' ')
-		if s[0]="Cours":
+		if s[0]=="Cours":
 			cours.append(i)
 	return cours
 
@@ -73,3 +79,14 @@ def getModulebyTime(day,hour,sheet):
 	for i in modules:
 		if hour in i[0]:
 			return i[1]
+
+def telltds(day):
+	#student list the value of group in index 7 and the degree in the 6 index
+	group = ''
+	degree = ''
+	if 'user' in config:
+		group = config['user']['group']
+		degree = config['user']['degree']
+	tds = getTds(day,getsheet(schldspath,degree,group))
+	print(tds)
+
