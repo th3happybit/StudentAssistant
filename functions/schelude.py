@@ -30,7 +30,6 @@ def getTC(day,sheet,tc):
 			if i == day:
 				for j in range(2,sheet.max_row+1):
 						modules.append([sheet.cell(row=j,column=1).value,sheet.cell(row=j,column=days.index(day)+2).value])
-						print(modules)
 		for i in modules:
 			s = i[1].split(' ')
 			#type TD or Cours
@@ -47,8 +46,8 @@ def getAll(day,sheet):
 		days.append(sheet.cell(row=1,column=i).value)
 	for i in days:
 		if i == day:
-			for j in range(2,sheet.max_rows+1):
-					modules.append([ws.cell(row=j,column=1).value,ws.cell(row=j,column=days.index('Sunday')+2).value])
+			for j in range(2,sheet.max_row+1):
+					modules.append([sheet.cell(row=j,column=1).value,sheet.cell(row=j,column=days.index(day)+2).value])
 	return modules
 
 def getTimeofmodule(module,sheet):
@@ -65,11 +64,18 @@ def getdays(sheet):
 		days.append(sheet.cell(row=1,column=i).value)
 	return days
 
-def getModulebyTime(day,hour,sheet):
+def getModulebyTime(day,hour):
+	group = ''
+	degree = ''
+	if 'user' in config:
+		group = config['user']['group']
+		degree = config['user']['degree']
+	sheet = getsheet(schldspath,degree,group)
 	days =  getdays(sheet)
 	modules = getAll(day,sheet)
 	for i in modules:
-		if hour in i[0]:
+		time = i[0].split(' ')
+		if hour == time[0]:
 			return i[1]
 
 
@@ -99,3 +105,6 @@ def tellmodules(day,tc):
 			elif time[0]=='0':
 				time = temp[0].split(' ')
 				speak("you have "+ temp[1] + " from "+time[0] + " to "+time[len(time)-1])
+
+def tellmodule(day,hour):
+	speak("On " + day +" At "+ hour +" you have " + getModulebyTime(day,hour))

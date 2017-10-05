@@ -11,6 +11,7 @@ from functions import profilegen
 from functions import schelude, timenow
 
 def main():
-	schelude.tellmodules('Tuesday','Cours')
+	schelude.tellmodule('Sunday','10')
+	return
 if __name__ == '__main__':
     main()

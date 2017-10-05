@@ -4,7 +4,7 @@ import sqlite as sq
 import configparser
 config = configparser.ConfigParser()
 
-def firstWelcome():
+def generateProfile():
 	ask("Welcome to Student assistant , i hope i will be helpful to you , i want to do some configuration , can you help me please ? ")
 	ask("we will use the terminel to avoid mistakes !")	
 	ask("First ! can you entry your name , please ? ")
@@ -41,17 +41,11 @@ def firstWelcome():
 	config.set('user','firstname',fname)
 	config.set('user','lastname',lname)
 	config.set('user','degree',degree)
-	config.set('user','group',gr)
+	config.set('user','group',g)
 	config.write(cfg)
 	cfg.close()
 
-def normalIntro():
-	config.read("data/main.cfg")
-	db = ""
-	if 'database' in config:
-		db = config['database']['dbname']
-	student = sq.select_student(db)
-	speak("welcome back "+ student[1])
+
 
 def ask(text):
 	speak(text)
